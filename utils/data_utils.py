@@ -44,7 +44,7 @@ def get_train_dolphinx_dataset(args):
         test_path = './data/2d/darcy2d_simple_2500_test.pkl'
     
     elif args.dataset == "heat2d_simple":
-        train_path = './data/2d/heat2d_simple_100000_train.pkl'
+        train_path = './data/2d/heat2d_simple_80000_train.pkl'
         test_path = './data/2d/heat2d_simple_12500_test.pkl'
         time_dependent = args.time_dependent
         time_step = args.time_step
