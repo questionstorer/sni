@@ -281,7 +281,8 @@ class DDNO(torch.nn.Module):
             
             local_input_func = [MultipleTensors([t for t in local_input_func[i]] + [local_boundary_func[i]]) for i, _ in enumerate(self.domain.subDomain)]
             gs, us, fs, reverse_args = zip(*[self.normalizer.preprocess(self.graphs[i], u_p, local_input_func[i]) for i, _ in enumerate(self.domain.subDomain)])
-            if self.local_operator.__name__ == "CGPT":
+            operator_name = getattr(self.local_operator, "__name__", type(self.local_operator).__name__)
+            if operator_name in {"CGPT", "MIOEGPT"}:
             
                 batched = [dgl.batch(list(gs)), torch.stack(us)]
                 fs_ = MultipleTensors(
@@ -290,7 +291,7 @@ class DDNO(torch.nn.Module):
                 indices = [0] + torch.cumsum(batched[0].batch_num_nodes(), 0).cpu().numpy().tolist()
                 ls = self.local_operator(*batched)
                 local_sol = [ls[indices[i]:indices[i+1], :] for i in range(len(indices) - 1)]
-            elif self.local_operator.__name__ == "geofno":
+            elif operator_name == "geofno":
                 meshes = []
                 input_bcs = []
                 indices = []
@@ -349,7 +350,7 @@ class DDNO(torch.nn.Module):
                 ls = self.local_operator(inputs, input_u_ps, meshes)
                 local_sol = [l[:ind[0]] for l, ind in zip(ls, indices)]
             
-            elif self.local_operator.__name__ == "meshgraphnets":
+            elif operator_name == "meshgraphnets":
                 # Similar to geofno but for meshgraphnets
                 meshes = []
                 input_bcs = []
@@ -396,6 +397,8 @@ class DDNO(torch.nn.Module):
 
                 ls = self.local_operator(inputs, input_u_ps, meshes)
                 local_sol = [l[:ind[0]] for l, ind in zip(ls, indices)]
+            else:
+                raise NotImplementedError(f"Unsupported local operator for DDNO: {operator_name}")
 
             local_sols = [self.normalizer.postprocess(s, *a) for s, a in zip(local_sol, reverse_args)]
 
