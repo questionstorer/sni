@@ -14,7 +14,7 @@ from models.GNOT.data_utils import MIODataset
 from models.GNOT.utils import TorchQuantileTransformer, UnitTransformer, PointWiseUnitTransformer, MultipleTensors
 
 import typing
-from utils.augmentation import Darcy2dTransform, Laplace2dTransform, Laplace2dMixedTransform, Heat2dTransform, Helmholtz2dTransform, NonlinearPoisson2dTransform
+from utils.augmentation import Darcy2dTransform, Laplace2dTransform, Laplace2dMixedTransform, Heat2dTransform, NonlinearPoisson2dTransform
 from utils.normalization import Laplace2dNormalizer, Laplace2dMixedNormalizer, Darcy2dNormalizer, Heat2dNormalizer, NonlinearPoisson2dNormalizer
 from trimesh.interfaces.gmsh import load_gmsh
 import gmshparser

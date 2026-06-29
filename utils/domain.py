@@ -187,7 +187,7 @@ class DecomposedSimplePolygonMeshDomain(DecomposedMeshDomain):
             self.n_parts = 1
             partition = [set(self.G.nodes)]
         
-        self.partition = extend_partition(self.G, partition)
+        self.partition = extend_partition(self.G, partition, depth=depth)
         self.subDomain = []
         self.mapping = []
         for part in self.partition:
@@ -308,7 +308,7 @@ def extend_partition(G, partition, depth=1):
 
 
 class DecomposedDomain:
-    def __init__(self, G, interior, boundary, dim, n_parts):
+    def __init__(self, G, interior, boundary, dim, n_parts, depth=1):
         self.dim = dim
         self.interior = interior
         self.boundary = boundary # global boundary
@@ -316,7 +316,7 @@ class DecomposedDomain:
         self.all = all[np.argsort(all[:, -1])]
         self.n_parts, self.partition = partition_graph(G, n_parts)
 
-        self.overlapping_partition = extend_partition(G, self.partition)
+        self.overlapping_partition = extend_partition(G, self.partition, depth=depth)
         self.tree = KDTree(self.all[:, :-1])
         self.construct_subDomain()
 
@@ -409,7 +409,7 @@ def build_graph_delaunay(points):
                 G.add_edge(v, w)
     return G
 
-def create_subdomains(interior_points:np.ndarray, boundary_points:np.ndarray, dim, n_parts=6):
+def create_subdomains(interior_points:np.ndarray, boundary_points:np.ndarray, dim, n_parts=6, depth=1):
     # divide domains of 1D into subintervals, 2D into polygons according to eval_centers
     assert dim in [1, 2], logger.error("dimension has to be 1 or 2")
 
@@ -418,7 +418,7 @@ def create_subdomains(interior_points:np.ndarray, boundary_points:np.ndarray, di
     if dim == 2:
         G = build_graph_delaunay(points)
 
-        dcps = DecomposedDomain(G, interior_points, boundary_points, dim=dim, n_parts=n_parts)
+        dcps = DecomposedDomain(G, interior_points, boundary_points, dim=dim, n_parts=n_parts, depth=depth)
 
     elif dim == 1:
         G = nx.Graph()
@@ -427,7 +427,7 @@ def create_subdomains(interior_points:np.ndarray, boundary_points:np.ndarray, di
         G.add_edges_from(pairwise([int(i) for i in points[:, 1].astype("uint8").tolist()]))
         #partition = extend_partition(G, partition)
 
-        dcps = DecomposedDomain(G, interior_points, boundary_points, dim=dim, n_parts=n_parts)
+        dcps = DecomposedDomain(G, interior_points, boundary_points, dim=dim, n_parts=n_parts, depth=depth)
 
     return G, dcps
 

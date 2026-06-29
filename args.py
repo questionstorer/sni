@@ -23,9 +23,9 @@ def _add_common_args(parser):
     parser.add_argument('--train-num', type=str, default='all')
     parser.add_argument('--test-num', type=str, default='all')
     parser.add_argument('--sort-data', type=int, default=0)
-    parser.add_argument('--normalize_x', type=str, default='unit',
+    parser.add_argument('--normalize_x', type=str, default='none',
                         choices=['none', 'minmax', 'unit'])
-    parser.add_argument('--normalize_y', type=str, default='unit',
+    parser.add_argument('--normalize_y', type=str, default='none',
                         choices=['none', 'minmax', 'unit', 'quantile'],
                         help="whether normalize y")
     parser.add_argument('--no-cuda', action='store_true', default=False,
@@ -36,7 +36,7 @@ def _add_common_args(parser):
     # model architecture
     parser.add_argument('--model-name', type=str, default='GNOT',
                         choices=['CGPT', 'GNOT'])
-    parser.add_argument('--n-hidden', type=int, default=64)
+    parser.add_argument('--n-hidden', type=int, default=128)
     parser.add_argument('--n-layers', type=int, default=3)
 
     # MLP / attention
@@ -106,10 +106,14 @@ def get_inference_parser():
     parser.add_argument('--model-path', type=str)
 
     # domain decomposition
-    parser.add_argument('--n-parts', type=int, default=10)
-    parser.add_argument('--tau', type=float)
+    parser.add_argument('--n-parts', type=int, default=20)
+    parser.add_argument('--tau', type=float,
+                        help='relaxation parameter for the Schwarz fixed-point map')
     parser.add_argument('--depth', type=int, default=2)
     parser.add_argument('--epochs', type=int, default=5000)
+    parser.add_argument('--stop-mode', type=str, default='metric_stagnation',
+                        choices=['metric_stagnation'],
+                        help='stopping criterion for the outer fixed-point iteration')
 
     # time dependent (inference-specific overrides)
     parser.add_argument('--time-span', type=int, default=1)
