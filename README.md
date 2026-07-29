@@ -121,14 +121,27 @@ python inference.py --dataset laplace2d_schwarz --model-path data/chkpt/<checkpo
 | Heat2d | `heat2d` | Time-dependent heat equation with Dirichlet BC |
 | NonlinearLaplace2d | `nonlinear_poisson2d` | Nonlinear Poisson equation (q(u)=1+u²) |
 
-### Download Data
+### Download Data & Checkpoints
 
-Pre-generated training and evaluation data are available on Hugging Face:
+Pre-generated training/evaluation data and pre-trained model checkpoints are available on Hugging Face:
 
 ```bash
-# Download and extract to sni/data/2d/
-huggingface-cli download questionstorer/sni --repo-type dataset --local-dir data/2d/
+# Download everything (data + checkpoints) to sni/data/
+huggingface-cli download questionstorer/sni --repo-type dataset --local-dir data/
+
+# Download only checkpoints
+huggingface-cli download questionstorer/sni --repo-type dataset --include "ckpt/*" --local-dir data/
 ```
+
+#### Pre-trained Checkpoints
+
+| PDE | Checkpoint |
+|---|---|
+| Laplace2d (Dirichlet) | `ckpt/laplace2d_simple_all_CGPTrel2_0502_15_02_06.pt` |
+| Laplace2d (Mixed) | `ckpt/laplace2d_n_simple_all_CGPTrel2_0505_02_23_48.pt` |
+| Darcy2d | `ckpt/darcy2d_simple_all_CGPTrel2_0506_10_11_59.pt` |
+| Heat2d | `ckpt/heat2d_simple_80000_all_CGPTrel2_0511_18_00_46.pt` |
+| Nonlinear Poisson2d | `ckpt/nonlinear_poisson2d_simple_20000_all_CGPTrel2_0909_09_19_44.pt` |
 
 Alternatively, you can generate the data yourself (see [Data & Data Generation](#data--data-generation)).
 
